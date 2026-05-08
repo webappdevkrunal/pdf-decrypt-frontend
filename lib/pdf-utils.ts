@@ -12,12 +12,7 @@ import {
 import { buildG28FieldMap } from "./g28-field-map";
 import { Attorney, Client } from "./types";
 
-export interface PDFFieldInfo {
-  name: string;
-  type: string;
-  value: string;
-}
-
+// Suppress pdf-lib's encrypted object warnings — expected when loading G-28
 const originalWarn = console.warn;
 console.warn = (...args: any[]) => {
   const msg = typeof args[0] === "string" ? args[0] : "";
@@ -31,6 +26,14 @@ console.warn = (...args: any[]) => {
   originalWarn(...args);
 };
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface PDFFieldInfo {
+  name: string;
+  type: string;
+  value: string;
+}
+
 // ─── Decrypt ──────────────────────────────────────────────────────────────────
 
 async function decryptIfNeeded(pdfBytes: Uint8Array): Promise<Uint8Array> {
@@ -38,11 +41,12 @@ async function decryptIfNeeded(pdfBytes: Uint8Array): Promise<Uint8Array> {
   if (!probe.isEncrypted) return pdfBytes;
 
   console.log("PDF is encrypted — sending to decrypt service");
+
   const res = await fetch(
     "https://pdf-decrypt-service-r7hx.onrender.com/decrypt-pdf",
     {
       method: "POST",
-      body: pdfBytes,
+      body: pdfBytes.buffer as ArrayBuffer, // ← fix: unwrap to ArrayBuffer
       headers: { "Content-Type": "application/pdf" },
     },
   );
@@ -55,10 +59,7 @@ async function decryptIfNeeded(pdfBytes: Uint8Array): Promise<Uint8Array> {
   return new Uint8Array(await res.arrayBuffer());
 }
 
-// ─── Shared: resolve AcroForm field tree ──────────────────────────────────────
-// G-28 stores AcroForm as an indirect ref — catalog.lookup() fails on it.
-// We go through context.lookup() which resolves refs without validation.
-// collectFields walks the Kids tree so pdf-lib's getForm() can find all fields.
+// ─── Shared helpers ───────────────────────────────────────────────────────────
 
 function resolveAcroForm(pdfDoc: PDFDocument) {
   const context = pdfDoc.context;
@@ -72,7 +73,7 @@ function resolveAcroForm(pdfDoc: PDFDocument) {
 }
 
 function collectFieldTree(
-  context: PDFDocument["context"],
+  context: ReturnType<typeof resolveAcroForm>["context"],
   array: PDFArray,
 ): void {
   for (const entry of array.asArray()) {
@@ -197,7 +198,9 @@ export async function fillG28PDF(
 // ─── Download ─────────────────────────────────────────────────────────────────
 
 export function downloadPDF(pdfBytes: Uint8Array, filename: string): void {
-  const blob = new Blob([pdfBytes], { type: "application/pdf" });
+  const blob = new Blob([pdfBytes.buffer as ArrayBuffer], {
+    type: "application/pdf",
+  });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;

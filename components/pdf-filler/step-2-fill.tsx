@@ -4,14 +4,25 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { extractPDFFields, PDFFieldInfo } from "@/lib/pdf-utils";
+import { Client } from "@/lib/types";
 
 interface Step2FillProps {
   pdfFile: File;
-  onFill: (pdfBytes: Uint8Array) => void;
+  onFill: () => Promise<void>;
   isLoading?: boolean;
+  clients: Client[]; // add
+  selectedClientId: string; // add
+  onClientChange: (id: string) => void; // add
 }
 
-export function Step2Fill({ pdfFile, onFill, isLoading = false }: Step2FillProps) {
+export function Step2Fill({
+  pdfFile,
+  onFill,
+  isLoading = false,
+  clients,
+  selectedClientId,
+  onClientChange,
+}: Step2FillProps) {
   const [fields, setFields] = useState<PDFFieldInfo[]>([]);
   const [loadingFields, setLoadingFields] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -70,9 +81,7 @@ export function Step2Fill({ pdfFile, onFill, isLoading = false }: Step2FillProps
     <div className="w-full max-w-md">
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold text-foreground mb-2">
-            Fill PDF
-          </h2>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Fill PDF</h2>
           <p className="text-sm text-muted-foreground">
             Click the button below to fill the PDF with sample data
           </p>
@@ -90,16 +99,18 @@ export function Step2Fill({ pdfFile, onFill, isLoading = false }: Step2FillProps
                   className="text-xs text-muted-foreground p-2 bg-background rounded border border-muted"
                 >
                   <span className="font-medium">{field.name}</span>
-                  <span className="text-muted-foreground/60"> • {field.type}</span>
+                  <span className="text-muted-foreground/60">
+                    {" "}
+                    • {field.type}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
-
         </div>
 
         <Button
-          onClick={() => onFill(null as any)} // Trigger parent fill function
+          onClick={() => onFill()} // Trigger parent fill function
           disabled={isLoading || fields.length === 0}
           size="lg"
           className="w-full"
