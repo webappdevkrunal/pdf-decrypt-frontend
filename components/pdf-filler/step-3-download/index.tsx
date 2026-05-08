@@ -33,7 +33,9 @@ export function Step3Download({
 
         <div className="p-4 bg-muted rounded-lg text-center">
           <p className="text-xs text-muted-foreground mb-1">Output File</p>
-          <p className="font-medium text-foreground truncate">{outputFileName}</p>
+          <p className="font-medium text-foreground truncate">
+            {outputFileName}
+          </p>
         </div>
 
         <div className="space-y-2">

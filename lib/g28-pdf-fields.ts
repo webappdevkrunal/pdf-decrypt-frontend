@@ -1,7 +1,3 @@
-// lib/g28-pdf-fields.ts
-// All G-28 PDF field names in one place.
-// If USCIS releases a new form version, only this file changes.
-
 export const G28 = {
   attorney: {
     familyName:       "form1[0].#subform[0].Pt1Line2a_FamilyName[0]",
