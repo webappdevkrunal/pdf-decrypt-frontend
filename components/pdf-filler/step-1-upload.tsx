@@ -49,7 +49,7 @@ export function Step1Upload({ onFileSelect, fileName }: Step1UploadProps) {
 
         {fileName && (
           <div className="flex items-center gap-2 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/30 rounded-lg">
-            <div className="h-8 w-8 rounded bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-700 dark:text-green-400 font-semibold text-sm flex-shrink-0">
+            <div className="h-8 w-8 rounded bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-700 dark:text-green-400 font-semibold text-sm ">
               ✓
             </div>
             <div className="flex-1 min-w-0">

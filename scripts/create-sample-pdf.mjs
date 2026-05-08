@@ -1,11 +1,11 @@
-import { PDFDocument, PDFPage, rgb } from 'pdf-lib';
+import { PDFDocument, rgb } from 'pdf-lib';
 import fs from 'fs';
 import path from 'path';
 
 async function createSamplePDF() {
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage([600, 800]);
-  const { width, height } = page.getSize();
+  const {  height } = page.getSize();
 
   // Add title
   page.drawText('Application Form', {

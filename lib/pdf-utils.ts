@@ -42,14 +42,11 @@ async function decryptIfNeeded(pdfBytes: Uint8Array): Promise<Uint8Array> {
 
   console.log("PDF is encrypted — sending to decrypt service");
 
-  const res = await fetch(
-    "https://pdf-decrypt-service-r7hx.onrender.com/decrypt-pdf",
-    {
-      method: "POST",
-      body: pdfBytes.buffer as ArrayBuffer, // ← fix: unwrap to ArrayBuffer
-      headers: { "Content-Type": "application/pdf" },
-    },
-  );
+  const res = await fetch("https://pdf-server-q20x.onrender.com/decrypt-pdf", {
+    method: "POST",
+    body: pdfBytes.buffer as ArrayBuffer, // ← fix: unwrap to ArrayBuffer
+    headers: { "Content-Type": "application/pdf" },
+  });
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
