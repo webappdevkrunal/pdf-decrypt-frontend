@@ -137,7 +137,7 @@ async function createSamplePDF() {
   }
 
   fs.writeFileSync(path.join(publicDir, 'sample-form.pdf'), pdfBytes);
-  console.log('Sample PDF created at public/sample-form.pdf');
+
 }
 
 createSamplePDF().catch(console.error);
